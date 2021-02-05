@@ -2,21 +2,51 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Lib
+import Location
+import qualified CSExpr as TE
+import CodeGen
+import qualified Runtime as R
 
+import Data.List
 import Data.Text.Lazy
 import Web.Scotty
 import Data.Monoid (mconcat)
 import Data.Aeson hiding (json)
 import GHC.Generics
+import Control.Monad.IO.Class
 
 import Network.Wai.Middleware.Cors
 
+import System.Environment(getArgs)
+import System.Exit
+
 main :: IO ()
-main = scotty 3000 $ do
+main = do
+    appName <- fromProgArgs
+    putStrLn appName
+    funMap <- initialize appName
+    scottymain appName funMap
+
+fromProgArgs :: IO String
+fromProgArgs = do
+    args <- getArgs
+    case args of
+      [appName] -> return appName
+      _ -> do putStrLn $ "No app name or multiple app names: " ++ show args
+              exitWith $ ExitFailure (-1)              
+
+initialize :: String -> IO R.FunctionMap
+initialize appName = do
+    funStore <- R.load_funstore $ "../csprog/" ++ appName ++ "_server.cs"
+    putStrLn $ show (Data.List.length funStore) ++ " functions are loaded..."
+    return $ cgFunMap clientLocName funStore
+
+scottymain :: String -> R.FunctionMap -> IO ()
+scottymain appName funMap = scotty 3000 $ do
     middleware simpleCors
-    get "/api" $ do
-        json $ apiInfo
+    post (capture $ "/" ++ appName) $ (do
+        runtime_value <- (jsonData :: ActionM R.Value)
+        json $ apiInfo)
 
 apiInfo = APIInfo
   { current_user_url = "https://api.github.com/user"
