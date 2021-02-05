@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 04e1d6259c33b4fa5aede5fdca9fa7025662d7d62437a98858f11f5a2c5d2b23
+-- hash: e0be063cdd237221b514cd9032dab3319b7d622c51c403808417509efe62bdc9
 
 name:           webserver
 version:        0.1.0.0
@@ -37,10 +37,14 @@ library
     , aeson-pretty >=0.8.8 && <0.9
     , base >=4.7 && <5
     , containers >=0.6.0 && <0.7
+    , data-default-class
     , json >=0.10 && <0.11
+    , monadIO
+    , mtl
     , pretty >=1.1.3 && <1.2
     , prettyprinter >=1.6.1 && <1.7
     , scotty
+    , stm
     , text
     , transformers >=0.5.6.2 && <=0.5.6.2
     , wai-cors
@@ -76,10 +80,14 @@ executable webserver-exe
     , aeson-pretty >=0.8.8 && <0.9
     , base >=4.7 && <5
     , containers >=0.6.0 && <0.7
+    , data-default-class
     , json >=0.10 && <0.11
+    , monadIO
+    , mtl
     , pretty >=1.1.3 && <1.2
     , prettyprinter >=1.6.1 && <1.7
     , scotty
+    , stm
     , text
     , transformers >=0.5.6.2 && <=0.5.6.2
     , wai-cors
@@ -99,10 +107,14 @@ test-suite webserver-test
     , aeson-pretty >=0.8.8 && <0.9
     , base >=4.7 && <5
     , containers >=0.6.0 && <0.7
+    , data-default-class
     , json >=0.10 && <0.11
+    , monadIO
+    , mtl
     , pretty >=1.1.3 && <1.2
     , prettyprinter >=1.6.1 && <1.7
     , scotty
+    , stm
     , text
     , transformers >=0.5.6.2 && <=0.5.6.2
     , wai-cors
