@@ -6,10 +6,7 @@ app/bidi:
 Naming.hs  Pretty.hs
 
 app/codegen:
-CodeGen.hs  Runtime.hs
-
-app/cs:
-CSExpr.hs  CSSubst.hs  CSType.hs
+Runtime.hs
 
 app/util:
 Util.hs

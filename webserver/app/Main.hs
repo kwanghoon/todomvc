@@ -4,8 +4,6 @@
 module Main where
 
 import Location
-import qualified CSExpr as TE
-import CodeGen
 import qualified Runtime as R
 
 import Control.Concurrent.STM
@@ -43,10 +41,10 @@ main = do
 
 -- | Initialize and run app
 
-initialize :: String -> IO R.FunctionMap
+initialize :: String -> IO R.RuntimeFunctionMap
 initialize appName = do
-    cs_funStore <- R.load_funstore $ "../csprog/" ++ appName ++ "_server.cs"
-    let funStore = cgFunMap clientLocName cs_funStore
+    r_funStore <- R.load_funstore $ "../prog/" ++ appName ++ "_server.r"
+    let funStore = R.interpFunMap clientLocName r_funStore
     putStrLn $ show (Data.List.length funStore) ++ " functions are loaded..."
     return funStore
 
@@ -63,12 +61,6 @@ action chan = do
     output_value <- readChan chan 
 
     json $ output_value
-
-receive :: ActionT Text IO R.Value
-receive = jsonData
-
-send :: R.Value -> ActionT Text IO ()
-send v = json v
 
 -- | Utility
 

@@ -8,6 +8,7 @@ module Main where
 
 import           Data.Aeson
 import           Data.Aeson.Types
+import           Data.List
 import qualified Data.Map                      as M
 import           Data.Maybe
 import           GHC.Generics
@@ -16,7 +17,16 @@ import           JavaScript.Web.XMLHttpRequest
 import           Miso                          hiding (defaultOptions)
 import           Miso.String
 
-import Runtime
+import Location
+import qualified CSExpr as TE
+import CodeGen
+import qualified Runtime as R
+
+import System.Environment(getArgs)
+import System.Exit
+
+import Todomvc_main
+import Todomvc_client
 
 -- | Model
 data Model
@@ -34,6 +44,12 @@ data Action
 -- | Main entry point
 main :: IO ()
 main = do
+  appName <- fromProgArgs
+  putStrLn appName
+  
+  let funMap = todomvc_client
+  let csmain = todomvc_main
+  
   startApp App { model = Model Nothing
                , initialAction = NoOp
                , mountPoint = Nothing
@@ -146,3 +162,24 @@ getGitHubAPIInfo = do
                   , reqData = NoData
                   }
 
+-- | Initialize the client cs program
+
+-- | File reading is not supported by GHCJS!
+
+-- initialize :: String -> IO R.FunctionMap
+-- initialize appName = do
+--     cs_funStore <- R.load_funstore $ "../csprog/" ++ appName ++ "_server.cs"
+--     let funStore = cgFunMap clientLocName cs_funStore
+--     putStrLn $ show (Data.List.length funStore) ++ " functions are loaded..."
+--     return funStore
+
+-- | Utility
+
+fromProgArgs :: IO String
+fromProgArgs = do
+    args <- getArgs
+    case args of
+      [appName] -> return appName
+      _ -> return "todomvc" -- ToDo: Fix this
+           -- do putStrLn $ "No app name or multiple app names: " ++ show args
+           --   exitWith $ ExitFailure (-1)              

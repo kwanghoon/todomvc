@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e0be063cdd237221b514cd9032dab3319b7d622c51c403808417509efe62bdc9
+-- hash: 80f5018fdd8f8729e449e66e9586e028d5ca44e7357cbdf070cef67f9596775f
 
 name:           webserver
 version:        0.1.0.0
@@ -59,10 +59,6 @@ executable webserver-exe
       Prim
       Type
       Util
-      CSExpr
-      CSSubst
-      CSType
-      CodeGen
       Runtime
       Naming
       Pretty
@@ -71,7 +67,6 @@ executable webserver-exe
       app
       app/ast
       app/util
-      app/cs
       app/codegen
       app/bidi
   ghc-options: -threaded -rtsopts -with-rtsopts=-N

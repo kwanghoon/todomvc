@@ -21,6 +21,8 @@ executable app
     CodeGen
     Runtime
     Util
+    Todomvc_main
+    Todomvc_client
   hs-source-dirs:
     app
     app/ast
@@ -28,6 +30,7 @@ executable app
     app/cs
     app/codegen
     app/util
+    app/prog
   ghcjs-options:
     -dedupe
   build-depends:

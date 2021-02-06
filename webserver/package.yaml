@@ -46,7 +46,6 @@ executables:
     - app
     - app/ast
     - app/util
-    - app/cs
     - app/codegen
     - app/bidi
     ghc-options:
