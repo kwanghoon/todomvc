@@ -10,15 +10,11 @@ executable app
   other-modules:
     Naming
     Pretty
-    CSType
-    CSSubst
-    CSExpr
     Location
     Type
     Expr
     Prim
     Literal
-    CodeGen
     Runtime
     Util
     Todomvc_main
@@ -27,7 +23,6 @@ executable app
     app
     app/ast
     app/bidi
-    app/cs
     app/codegen
     app/util
     app/prog

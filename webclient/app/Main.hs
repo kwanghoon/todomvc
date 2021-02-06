@@ -18,8 +18,6 @@ import           Miso                          hiding (defaultOptions)
 import           Miso.String
 
 import Location
-import qualified CSExpr as TE
-import CodeGen
 import qualified Runtime as R
 
 import System.Environment(getArgs)
