@@ -45,7 +45,7 @@ data Expr =
 --  | TypeApp Value Type [Type]
 --  | LocApp Value [Location]
   | Prim PrimOp [Value] [Value]
-  deriving (Read, Show, Typeable, Data, Generic)
+  deriving (Eq, Read, Show, Typeable, Data, Generic)
 
 instance DA.FromJSON PrimOp
 instance DA.ToJSON PrimOp
@@ -56,14 +56,14 @@ instance DA.ToJSON Expr
 data Alternative =
     Alternative String [String] Expr
   | TupleAlternative [String] Expr
-  deriving (Read, Show, Typeable, Data, Generic)
+  deriving (Eq, Read, Show, Typeable, Data, Generic)
 
 instance DA.FromJSON Alternative
 instance DA.ToJSON Alternative
 
 data BindingDecl =
     Binding Bool String Expr    -- isTop?
-    deriving (Read, Show, Typeable, Data, Generic)
+    deriving (Eq, Read, Show, Typeable, Data, Generic)
 
 instance DA.FromJSON BindingDecl
 instance DA.ToJSON BindingDecl
@@ -92,7 +92,7 @@ type Value = Expr
 
 data CodeName =
     CodeName String    -- fname (no location values and no types)
-  deriving (Read, Show, Typeable, Data, Generic)
+  deriving (Eq, Read, Show, Typeable, Data, Generic)
 
 instance DA.FromJSON CodeName
 instance DA.ToJSON CodeName
@@ -216,6 +216,7 @@ loop_server funMap = do
 -- | Memory
 
 data Mem = Mem { _new :: Integer, _map :: Map.Map Addr Value }
+  deriving Eq
 
 type Addr = Integer
 

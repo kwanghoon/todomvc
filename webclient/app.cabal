@@ -16,6 +16,7 @@ executable app
     Prim
     Literal
     Runtime
+    WebRuntime
     Util
     Todomvc_main
     Todomvc_client
