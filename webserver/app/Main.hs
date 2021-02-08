@@ -32,10 +32,13 @@ main = do
     funMap <- initialize appName
 
     chan <- newChan :: IO (Chan R.Value)
-    let send v = writeChan chan v :: IO ()
-    let receive = readChan chan :: IO R.Value
+    let send mem v = do writeChan chan v :: IO ()
+                        return mem
+    let receive mem = do v <- readChan chan :: IO R.Value
+                         return (v, mem)
 
-    server_thread_id <- fork (evalStateT (R.loop_server funMap) (R.initMem, send, receive) )
+    server_thread_id <-
+      fork (evalStateT (R.loop_server funMap) (R.initMem, send, receive) )
     
     scottyT 3000 id $ scottyapp appName chan
 
