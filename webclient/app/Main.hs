@@ -66,7 +66,7 @@ main = do
   
   (pageV, state) <- runStateT
       (R.interpExpr clientLocName webMain runtimeFunMap initEnv)
-      (R.initMem, WR.send, WR.receive)
+      (R.initMem, WR.webSend, WR.webReceive)
 
   let (initModel, viewModel, updateModel, whereMountPoint) = WR.pageWebApp runtimeFunMap pageV state
 

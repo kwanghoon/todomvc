@@ -142,14 +142,16 @@ unitName = "UNIT"
 -- send and receive
 send :: Value -> RuntimeM ()
 send v = do
-  (mem,_send,_receive) <- get
-  liftIO $ _send v
+  (mem, _send, _receive) <- get
+  mem' <- liftIO $ _send mem v
+  put (mem', _send, _receive)
   return ()
 
 receive :: RuntimeM Value
 receive = do
   (mem,_send,_receive) <- get
-  v <- liftIO _receive
+  (v, mem') <- liftIO $ _receive mem
+  put (mem', _send, _receive)
   return v
 
 -- JSON
@@ -215,12 +217,12 @@ loop_server funMap = do
 
 -- | Memory
 
-data Mem = Mem { _new :: Integer, _map :: Map.Map Addr Value }
+data Mem = Mem { _new :: Integer, _map :: Map.Map Addr Value, _reg :: Maybe Value }
   deriving Eq
 
 type Addr = Integer
 
-initMem = Mem { _new=1, _map=Map.empty }
+initMem = Mem { _new=1, _map=Map.empty, _reg=Nothing }
 
 allocMem :: Value -> Mem -> (Addr, Mem)
 allocMem v mem =
@@ -237,7 +239,7 @@ readMem addr mem =
 writeMem :: Addr -> Value -> Mem -> Mem
 writeMem addr v mem = mem { _map= Map.insert addr v (_map mem) }
 
-type RuntimeState = (Mem, Value -> IO (), IO Value)
+type RuntimeState = (Mem, Mem -> Value -> IO Mem, Mem -> IO (Value, Mem))
 
 type RuntimeM = StateT RuntimeState IO
 

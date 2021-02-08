@@ -99,13 +99,13 @@ doExecute runtimeFunMap model updateValue argActionValue = do
      newModel <- apply runtimeFunMap updateAction (progModel model)
      return newModel) (progState model)
 
-send :: Value -> IO ()
-send v = do
+webSend :: Mem -> Value -> IO Mem
+webSend mem v = do
   Just resp <- contents <$> xhrByteString (req v)
   case eitherDecodeStrict resp :: Either String Value of
     Left s -> error s
-    Right j -> return () -- Todo: fix this by pure j
-  -- Todo: set the resp in the program state for receive to be able to take later!!
+    Right j -> return $ mem { _reg = Just j }
+    -- set the resp in the program state for receive to be able to take later!!
   
   where
     req v = Request
@@ -117,12 +117,12 @@ send v = do
       , reqData = StringData (pack $ show $ toJSON $ v)
       }
 
-receive :: IO Value
-receive =
-  -- Todo: Take the resp set by the send function !!
-  return $ Tuple []
-
-
+webReceive :: Mem -> IO (Value, Mem)
+webReceive mem = do
+  let receivedValue = _reg mem
+  case receivedValue of
+    Just v -> return ( v, mem { _reg = Nothing } )
+    Nothing -> error $ "[WebRuntime:webReceive] it should be Just v but Nothing"
 
 -- | For mount point
 
