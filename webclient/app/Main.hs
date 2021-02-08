@@ -62,14 +62,11 @@ main = do
   
   let initEnv = []
 
-  let send v = error $ "not supported yet"  -- Todo: Fix it!
-  let receive = error $ "not supported yet" -- Todo: Fix it!
-
   let runtimeFunMap = R.interpFunMap clientLocName funMap
   
   (pageV, state) <- runStateT
       (R.interpExpr clientLocName webMain runtimeFunMap initEnv)
-      (R.initMem, send, receive)
+      (R.initMem, WR.send, WR.receive)
 
   let (initModel, viewModel, updateModel, whereMountPoint) = WR.pageWebApp runtimeFunMap pageV state
 

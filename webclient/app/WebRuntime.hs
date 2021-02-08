@@ -6,8 +6,11 @@ import Miso.String
 import Literal
 import Runtime
 
+import Data.Aeson (eitherDecodeStrict, toJSON)
 import Data.List
 import Control.Monad.Trans.State.Lazy (runStateT)
+
+import           JavaScript.Web.XMLHttpRequest
 
 -------------------------------------------------------------------------
 -- | A PolyRpc Web applicaion runtime system
@@ -87,16 +90,46 @@ pageWebApp runtimeFunMap pageValue state =
   error $ "[pageWebApp] Unexpected page structure: " ++ show pageValue
 
 
+-- | For update
+
 doExecute :: RuntimeFunctionMap -> Model -> Value -> Value -> IO (Value, RuntimeState)
 doExecute runtimeFunMap model updateValue argActionValue = do
   runStateT (do 
      updateAction <- apply runtimeFunMap updateValue argActionValue
      newModel <- apply runtimeFunMap updateAction (progModel model)
      return newModel) (progState model)
+
+send :: Value -> IO ()
+send v = do
+  Just resp <- contents <$> xhrByteString (req v)
+  case eitherDecodeStrict resp :: Either String Value of
+    Left s -> error s
+    Right j -> return () -- Todo: fix this by pure j
+  -- Todo: set the resp in the program state for receive to be able to take later!!
   
+  where
+    req v = Request
+      { reqMethod = POST
+      , reqURI = pack "https://api.github.com" -- Todo: Fix this!
+      , reqLogin = Nothing
+      , reqHeaders = []
+      , reqWithCredentials = False
+      , reqData = StringData (pack $ show $ toJSON $ v)
+      }
+
+receive :: IO Value
+receive =
+  -- Todo: Take the resp set by the send function !!
+  return $ Tuple []
+
+
+
+-- | For mount point
 
 toMiso_String (Lit (StrLit str)) = ms str
 toMiso_String v = error $ "[WebRuntime: toMiso_String] Expected string literal but met: " ++ show v
+
+-- | For view
 
 fromHtmlToView :: Value -> View Value  -- Value=HTML [Msg], View Value=View Action
 fromHtmlToView htmlValue = error $ "[WebRuntime:fromHtmlToView] Not supported yet" -- Todo: Fix it!
