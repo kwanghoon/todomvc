@@ -47,14 +47,14 @@ import           JavaScript.Web.XMLHttpRequest
 
 mainName = "main"
 
-data Model = Model { progModel :: Value, progState :: RuntimeState }
+data Model = Model { progModel :: Value, progState :: RuntimeState, updatedView :: Maybe Value }
 
 instance Eq Model where
-  (Model a (b, _, _)) == (Model c (d, _, _)) = a == c && b == d
+  (Model a (b, _, _) c) == (Model d (e, _, _) f) = a == d && b == e && c == f
 
 data Action =
     Execute Value
-  | SetResult (Value, RuntimeState)   -- a new program model
+  | SetResult ((Value, Value), RuntimeState)   -- (a new program model, a new view), prog state
   | NoOp
 
 pageWebApp :: RuntimeFunctionMap -> Value -> RuntimeState
@@ -64,8 +64,9 @@ pageWebApp runtimeFunMap
   state =  ( initModel, view, update, miso_mount_point )
     
   where
-    initModel = Model { progModel=initModelValue, progState=state }
-    
+    initModel = Model { progModel=initModelValue, progState=state, updatedView = Nothing }
+
+    view :: Model -> View Action
     view model = do
       error $ "Not supported yet"  -- Todo: Fix it!
       
@@ -78,10 +79,10 @@ pageWebApp runtimeFunMap
     update :: Action -> Model -> Effect Action Model
     
     update (Execute argActionValue) model = model <# do
-      SetResult <$> doExecute runtimeFunMap model updateFunValue argActionValue
+      SetResult <$> doExecute runtimeFunMap model updateFunValue argActionValue viewFunValue
       
-    update (SetResult (_progModel, _progState)) model =
-      noEff Model { progModel=_progModel, progState=_progState }
+    update (SetResult ((_progModel, _updatedView), _progState)) model =
+      noEff Model { progModel=_progModel, progState=_progState, updatedView=Just _updatedView }
     ----------------------------------------------------------------------------
 
     miso_mount_point = toMiso_String mount_pointValue
@@ -92,12 +93,15 @@ pageWebApp runtimeFunMap pageValue state =
 
 -- | For update
 
-doExecute :: RuntimeFunctionMap -> Model -> Value -> Value -> IO (Value, RuntimeState)
-doExecute runtimeFunMap model updateValue argActionValue = do
+doExecute :: RuntimeFunctionMap -> Model -> Value -> Value -> Value -> IO ((Value, Value), RuntimeState)
+doExecute runtimeFunMap model updateValue argActionValue viewValue = do
   runStateT (do 
      updateAction <- apply runtimeFunMap updateValue argActionValue
      newModel <- apply runtimeFunMap updateAction (progModel model)
-     return newModel) (progState model)
+     
+     newView <- apply runtimeFunMap viewValue newModel
+     
+     return (newModel, newView) ) (progState model)
 
 webSend :: Mem -> Value -> IO Mem
 webSend mem v = do
@@ -131,6 +135,6 @@ toMiso_String v = error $ "[WebRuntime: toMiso_String] Expected string literal b
 
 -- | For view
 
-fromHtmlToView :: Value -> View Value  -- Value=HTML [Msg], View Value=View Action
+fromHtmlToView :: Value -> View Action  -- Value=HTML [Msg], View Value=View Action
 fromHtmlToView htmlValue = error $ "[WebRuntime:fromHtmlToView] Not supported yet" -- Todo: Fix it!
 
