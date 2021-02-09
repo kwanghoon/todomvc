@@ -128,16 +128,16 @@ doExecute runtimeFunMap model updateV funActionV parmsV viewV = do
 
 webSend :: Mem -> Value -> IO Mem
 webSend mem v = do
-  Just resp <- contents <$> xhrByteString (req v)
+  Just resp <- contents <$> xhrByteString (httpReq v)
   case eitherDecodeStrict resp :: Either String Value of
     Left s -> error s
     Right j -> return $ mem { _reg = Just j }
     -- set the resp in the program state for receive to be able to take later!!
   
   where
-    req v = Request
+    httpReq v = Request
       { reqMethod = POST
-      , reqURI = pack "https://api.github.com" -- Todo: Fix this!
+      , reqURI = pack "https://localhost:3000" -- Todo: Fix this!
       , reqLogin = Nothing
       , reqHeaders = []
       , reqWithCredentials = False

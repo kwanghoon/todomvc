@@ -18,6 +18,7 @@ executable app
     Runtime
     WebRuntime
     Util
+    WebApp
     Todomvc_main
     Todomvc_client
   hs-source-dirs:
