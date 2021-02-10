@@ -131,10 +131,13 @@ doExecute runtimeFunMap model updateV funActionV parmsV viewV = do
 
 webSend :: String -> Mem -> Value -> IO Mem
 webSend appName mem v = do
+  debug flag $ putStrLn $ "[client] webSend: " ++ show v ++ "\n"
   Just resp <- contents <$> xhrByteString (httpReq v)
   case eitherDecodeStrict resp :: Either String Value of
     Left s -> error s
-    Right j -> return $ mem { _reg = Just j }
+    Right j -> do
+       debug flag $ putStrLn $ "[client] webSend: " ++ show v ++ "\n"
+       return $ mem { _reg = Just j }
     -- set the resp in the program state for receive to be able to take later!!
   
   where
@@ -246,3 +249,13 @@ attrToViews (Constr "Cons" [h, t]) =
   attrToView h : attrToViews t
 
 attrToViews v = error $ "[WebRuntime:attrToViews] Unexpected: " ++ show v
+
+--------------
+-- | Debugging
+--------------
+
+flag = True
+
+debug True  io = do io
+debug False io = return ()
+
