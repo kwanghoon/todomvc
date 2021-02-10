@@ -59,6 +59,8 @@ scottyapp appName chan = do
 action :: Chan R.Value -> ActionT Text IO ()
 action chan = do
     input_value <- (jsonData :: ActionT Text IO R.Value)
+    liftIO $ putStrLn $ "Received:"
+    liftIO $ putStrLn $ show input_value
 
     writeChan chan input_value
     output_value <- readChan chan 

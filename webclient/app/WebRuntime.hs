@@ -6,8 +6,11 @@ import Miso.String
 import Literal
 import Runtime
 
-import Data.Aeson (eitherDecodeStrict, toJSON)
+import Data.Aeson (eitherDecodeStrict, encode) -- toJSON)
+import qualified Data.ByteString.Lazy as BSLazy(toStrict)
+import qualified Data.ByteString as BS(unpack)
 import Data.Bool
+import Data.Char (chr)
 import Data.List
 import Data.Maybe (fromJust)
 import qualified Data.Map as M (singleton)
@@ -126,8 +129,8 @@ doExecute runtimeFunMap model updateV funActionV parmsV viewV = do
      
      return (newModel, newView) ) (progState model)
 
-webSend :: Mem -> Value -> IO Mem
-webSend mem v = do
+webSend :: String -> Mem -> Value -> IO Mem
+webSend appName mem v = do
   Just resp <- contents <$> xhrByteString (httpReq v)
   case eitherDecodeStrict resp :: Either String Value of
     Left s -> error s
@@ -137,11 +140,11 @@ webSend mem v = do
   where
     httpReq v = Request
       { reqMethod = POST
-      , reqURI = pack "https://localhost:3000" -- Todo: Fix this!
+      , reqURI = pack $ "http://localhost:3000/" ++ appName
       , reqLogin = Nothing
       , reqHeaders = []
       , reqWithCredentials = False
-      , reqData = StringData (pack $ show $ toJSON $ v)
+      , reqData = StringData $ pack $ Data.List.map (chr. fromEnum) $ BS.unpack $ BSLazy.toStrict $ encode v -- (pack $ show $ toJSON $ v)
       }
 
 webReceive :: Mem -> IO (Value, Mem)
