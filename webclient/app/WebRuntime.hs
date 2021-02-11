@@ -71,7 +71,7 @@ pageWebApp :: RuntimeFunctionMap -> Value
                 , MisoString)
 pageWebApp r_FunMap
   (UnitM (Constr "Page" [ initModelV, viewFunV, updateFunV, mount_pointV ] )) =  do
-    htmlV <- apply r_FunMap updateFunV initModelV
+    UnitM htmlV <- apply r_FunMap viewFunV initModelV
 
     state <- get
     
@@ -128,14 +128,15 @@ doExecute runtimeFunMap model updateV funActionV parmsV viewV = do
      argActionV <-
       case parmsV of
        [] -> return funActionV
-       [parmV] -> apply runtimeFunMap funActionV parmV
+       [parmV] -> do UnitM resultV <- apply runtimeFunMap funActionV parmV
+                     return resultV
        _ -> error $ "[WebRuntime:webModel:doExecute] Not support more than one parm: "
                         ++ show (Data.List.length parmsV)
         
-     updateAction <- apply runtimeFunMap updateV argActionV
-     newModel <- apply runtimeFunMap updateAction (progModel model)
+     UnitM updateAction <- apply runtimeFunMap updateV argActionV
+     UnitM newModel <- apply runtimeFunMap updateAction (progModel model)
      
-     newView <- apply runtimeFunMap viewV newModel
+     UnitM newView <- apply runtimeFunMap viewV newModel
      
      return (newModel, newView) ) (progState model)
 
@@ -187,6 +188,24 @@ htmlToView (Constr "Element" [Lit (StrLit tag), attrs, htmls]) = htmlToView' tag
     htmlToView' "h4" = h4_ attrAttrs htmlViews
     htmlToView' "h5" = h5_ attrAttrs htmlViews
     htmlToView' "h6" = h6_ attrAttrs htmlViews
+
+    htmlToView' "div" = div_ attrAttrs htmlViews
+    
+    htmlToView' "ul" = ul_ attrAttrs htmlViews
+    htmlToView' "li" = li_ attrAttrs htmlViews
+
+    htmlToView' "a" = a_ attrAttrs htmlViews
+
+    htmlToView' "input" = input_ attrAttrs            -- Todo: htmlViews should be Nil ???
+    htmlToView' "label" = label_ attrAttrs htmlViews
+    htmlToView' "span" = span_ attrAttrs htmlViews
+
+    htmlToView' "button" = button_ attrAttrs htmlViews
+    
+    htmlToView' "section" = section_ attrAttrs htmlViews
+    htmlToView' "header" = header_ attrAttrs htmlViews
+    htmlToView' "footer" = footer_ attrAttrs htmlViews
+
     htmlToView' tag = error $ "[WebRuntime:htmlToView] Not supported yet: " ++ tag
   
 htmlToView (Constr "Txt" [Lit (StrLit textLit)]) = text $ pack textLit
