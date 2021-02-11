@@ -30,6 +30,7 @@ executable app
     app/prog
   ghcjs-options:
     -dedupe
+    +RTS -K2G -RTS
   build-depends:
       base
     , miso
