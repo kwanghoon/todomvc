@@ -12,7 +12,6 @@ import qualified Data.ByteString as BS(unpack)
 import Data.Bool
 import Data.Char (chr)
 import Data.List
-import Data.Maybe (fromJust)
 import qualified Data.Map as M (singleton)
 import Control.Monad.Trans.State.Lazy (runStateT)
 
@@ -68,7 +67,7 @@ data Action =
 pageWebApp :: RuntimeFunctionMap -> Value -> RuntimeState
     -> (Model, Model -> View Action, Action -> Model -> Effect Action Model, MisoString)
 pageWebApp r_FunMap
-  (Constr "Page" [ initModelV, viewFunV, updateFunV, mount_pointV ])
+  (UnitM (Constr "Page" [ initModelV, viewFunV, updateFunV, mount_pointV ] ))
   state =  ( initModel, view, update, miso_mount_point )
     
   where
@@ -83,7 +82,9 @@ pageWebApp r_FunMap
     -- | view
     ----------------------------------------------------------------------------
     view :: Model -> View Action
-    view model = htmlToView $ fromJust $ updatedView model
+    view model = htmlToView $ case updatedView model of
+                                Nothing -> Constr "Txt" [Lit (StrLit "Empty page")]
+                                Just v  -> v
       
     ----------------------------------------------------------------------------
     -- | update
@@ -136,7 +137,7 @@ webSend appName mem v = do
   case eitherDecodeStrict resp :: Either String Value of
     Left s -> error s
     Right j -> do
-       debug flag $ putStrLn $ "[client] webSend: " ++ show v ++ "\n"
+       debug flag $ putStrLn $ "[client] webSend: result: " ++ show j ++ "\n"
        return $ mem { _reg = Just j }
     -- set the resp in the program state for receive to be able to take later!!
   

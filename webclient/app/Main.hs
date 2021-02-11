@@ -53,7 +53,7 @@ main = do
       , update = update :: WR.Action -> WR.Model -> Effect WR.Action WR.Model
       
       , initialAction = WR.NoOp
-      , mountPoint    = Just whereInHtml
+      , mountPoint    = Nothing -- Just whereInHtml
       , ..
       }
     
