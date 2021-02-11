@@ -41,11 +41,10 @@ main = do
 
   let runtimeFunMap = R.interpFunMap clientLocName funMap
   
-  (pageV, state) <- runStateT
-      (R.interpExpr clientLocName webMain runtimeFunMap initEnv)
+  ((init, view, update, whereInHtml), state) <- runStateT
+      (do pageV <- R.interpExpr clientLocName webMain runtimeFunMap initEnv
+          WR.pageWebApp runtimeFunMap pageV)
       (R.initMem, WR.webSend appName, WR.webReceive)
-
-  let (init, view, update, whereInHtml) = WR.pageWebApp runtimeFunMap pageV state
 
   startApp App {
         model  = init

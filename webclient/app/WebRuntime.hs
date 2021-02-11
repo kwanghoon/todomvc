@@ -13,7 +13,7 @@ import Data.Bool
 import Data.Char (chr)
 import Data.List
 import qualified Data.Map as M (singleton)
-import Control.Monad.Trans.State.Lazy (runStateT)
+import Control.Monad.Trans.State.Lazy (runStateT, get)
 
 import           JavaScript.Web.XMLHttpRequest
 
@@ -64,20 +64,29 @@ data Action =
   | SetResult ((Value, Value), RuntimeState)   -- (a new program model, a new view), prog state
   | NoOp
 
-pageWebApp :: RuntimeFunctionMap -> Value -> RuntimeState
-    -> (Model, Model -> View Action, Action -> Model -> Effect Action Model, MisoString)
+pageWebApp :: RuntimeFunctionMap -> Value 
+    -> RuntimeM ( Model
+                , Model -> View Action
+                , Action -> Model -> Effect Action Model
+                , MisoString)
 pageWebApp r_FunMap
-  (UnitM (Constr "Page" [ initModelV, viewFunV, updateFunV, mount_pointV ] ))
-  state =  ( initModel, view, update, miso_mount_point )
+  (UnitM (Constr "Page" [ initModelV, viewFunV, updateFunV, mount_pointV ] )) =  do
+    htmlV <- apply r_FunMap updateFunV initModelV
+
+    state <- get
     
-  where
     ----------------------------------------------------------------------------
     -- | Initial model
     ----------------------------------------------------------------------------
-    initModel = Model { progModel=initModelV
-                      , progState=state
-                      , updatedView = Nothing }
+    let initModel =
+         Model { progModel=initModelV
+               , progState=state
+               , updatedView = Just htmlV }
 
+
+    return ( initModel, view, update, miso_mount_point )
+    
+  where
     ----------------------------------------------------------------------------
     -- | view
     ----------------------------------------------------------------------------
@@ -107,7 +116,7 @@ pageWebApp r_FunMap
     miso_mount_point = toMiso_String mount_pointV
     ----------------------------------------------------------------------------
 
-pageWebApp runtimeFunMap pageValue state =
+pageWebApp runtimeFunMap pageValue =
   error $ "[pageWebApp] Unexpected page structure: " ++ show pageValue
 
 
