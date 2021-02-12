@@ -8,7 +8,8 @@ For the client side, we recommend the [`nix`](https://nixos.org/nix) package man
 
 For the server side, you need [`stack`](https://www.haskellstack.org).
 
-```git clone https://github.com/kwanghoon/todomvc
+```
+git clone https://github.com/kwanghoon/todomvc
 cd todomvc/webserver
 stack build
 cd ../webclient
@@ -17,11 +18,13 @@ nix-build
 
 To run the server, in todomvc/webserver,
 
-```stack exec -- webserver-exe todomvc
+```
+stack exec -- webserver-exe todomvc
 ```
 
 To run the client, in todomvc/webclient,
 
-```xdg-open ./result/bin/app.jsexe/index.html
+```
+xdg-open ./result/bin/app.jsexe/index.html
 ```
 
