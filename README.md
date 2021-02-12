@@ -1,4 +1,4 @@
-# Experimental PolyRPC Rungime in Haskell with A TodoMVC web program
+# A PolyRPC Runtime in Haskell (with A TodoMVC web program)
 
 ## Getting started
 
