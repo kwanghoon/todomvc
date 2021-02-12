@@ -47,7 +47,7 @@ main = do
 initialize :: String -> IO R.RuntimeFunctionMap
 initialize appName = do
     r_funStore <- R.load_funstore $ "../prog/" ++ appName ++ "_server.r"
-    let funStore = R.interpFunMap clientLocName r_funStore
+    let funStore = R.interpFunMap serverLocName r_funStore
     putStrLn $ show (Data.List.length funStore) ++ " functions are loaded..."
     return funStore
 
