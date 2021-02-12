@@ -28,6 +28,19 @@ To run the client, in todomvc/webclient,
 xdg-open ./result/bin/app.jsexe/index.html
 ```
 
+Note my environment:
+```
+$ lsb_release -a 
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 20.10
+Release:	20.10
+Codename:	groovy
+
+$ uname -a
+Linux khchoi-ThinkPad-X1-Carbon-5th 5.8.0-43-generic #49-Ubuntu SMP Fri Feb 5 03:01:28 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+```
+
 ## Links
 
 - [The polyrpc compilation system](https://github.com/kwanghoon/polyrpc) being developed by Kwanghoon Choi
