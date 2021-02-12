@@ -28,3 +28,10 @@ To run the client, in todomvc/webclient,
 xdg-open ./result/bin/app.jsexe/index.html
 ```
 
+## Links
+
+- [The polyrpc compilation system](https://github.com/kwanghoon/polyrpc) being developed by Kwanghoon Choi
+- [The experimental Scala-based PolyRPC runtime](https://github.com/tzbob/rrpc) where TodoMVC written in PolyRPC was developed by Bob Reynders.
+
+
+
