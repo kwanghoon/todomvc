@@ -206,6 +206,8 @@ htmlToView (Constr "Element" [Lit (StrLit tag), attrs, htmls]) = htmlToView' tag
     htmlToView' "header" = header_ attrAttrs htmlViews
     htmlToView' "footer" = footer_ attrAttrs htmlViews
 
+    htmlToView' "link" = link_ attrAttrs              -- htmls are supposed to be null.
+
     htmlToView' tag = error $ "[WebRuntime:htmlToView] Not supported yet: " ++ tag
   
 htmlToView (Constr "Txt" [Lit (StrLit textLit)]) = text $ pack textLit
@@ -238,6 +240,8 @@ attrToView (Constr "Attribute" [Lit (StrLit keyText), Lit (StrLit valueText)]) =
     attrToView' "for" = for_ $ pack valueText
     attrToView' "placeholder" = placeholder_ $ pack valueText
     attrToView' "value" = value_ $ pack valueText
+    attrToView' "rel" = rel_ $ pack valueText
+    attrToView' "href" = href_ $ pack valueText
     attrToView' _ = error $ "[WebRuntime:attrToViews] Attribute: Unexpected: "
                               ++ show keyText ++ "=" ++ valueText
 
