@@ -300,5 +300,5 @@ init : Model
      = Content "" (! {server} serverModel) serverModel;
 
 main : Page [Model Msg]
-     = Page init view update "#body"
+     = Page init view update "body"
 
