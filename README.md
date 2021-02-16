@@ -43,7 +43,7 @@ Linux khchoi-ThinkPad-X1-Carbon-5th 5.8.0-43-generic #49-Ubuntu SMP Fri Feb 5 03
 
 Our TodoMVC program shows the same client UI as in [the other TodoMVC programs](https://todomvc.com) but it has a server program with a list of todo items. The client UI interacts with the server to read and modify the list.
 
-- <img src="https://github.com/kwanghoon/MySmallBasic/blob/master/todomvc/doc/todomvc_running.png"/>
+- <img src="https://github.com/kwanghoon/MySmallBasic/blob/master/doc/todomvc_running.png"/>
 
 ## Links
 
