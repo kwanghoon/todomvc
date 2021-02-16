@@ -227,6 +227,11 @@ htmlToViews v = error $ "[WebRuntime:htmlToViews] Unexpected: " ++ show v
 --
 attrToView :: Value -> Attribute Action -- Value=Attr [Msg], View Action
 
+attrToView (Constr "Property" [Lit (StrLit "checked"), Lit (StrLit valueText)]) =
+  if valueText=="true" then checked_ True
+  else if valueText=="false" then checked_ False
+  else error $ "[WebRuntime:attrToViews] Property: Unexpected: checked " ++ "=" ++ valueText
+
 attrToView (Constr "Property" [Lit (StrLit keyText), Lit (StrLit valueText)]) = 
   stringProp (pack keyText) valueText
 
